@@ -12,7 +12,7 @@ class OpenAI(private val openAiWebClient: WebClient, private val objectMapper: O
     fun complete(
         msg: String,
         maxTokens: Int = 100,
-        temperature: Float = 1F,
+        temperature: Float = 0F,
         model: String = "text-davinci-003"
     ): Mono<String> {
 
@@ -46,7 +46,7 @@ class OpenAI(private val openAiWebClient: WebClient, private val objectMapper: O
         return openAiWebClient.get()
             .uri("/models")
             .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer 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")
+            .header("Authorization", "Bearer  $openAIKey")
             .retrieve()
             .bodyToMono(String::class.java)
             .map { resp ->
