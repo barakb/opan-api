@@ -19,7 +19,8 @@ Horatio Hornblower is a fictional Royal Navy officer who is the protagonist of a
 by C. S. Forester. He first appeared in the 1937 novel "Mr. Midshipman Hornblower".
 The character's fame has endured due to the several films and television programmes that 
 have been made based upon the novels. Hornblower is depicted as a capable, intelligent,
-and courageous officer, who rises from humble beginnings to become a respected figure in the British navy.
+and courageous officer, who rises from humble beginnings to become a respected figure 
+in the British navy.
 
 >>> What are the books that Horation Hornblower character appears in ?
 1. The Happy Return (1937)
