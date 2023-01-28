@@ -1,0 +1,41 @@
+name: build
+
+on:
+  pull_request:
+    branches:
+      - master
+      - 'release/v*'
+  push:
+    branches:
+      - master
+      - 'release/v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          check-latest: true
+      - name: compute short sha and current time
+        id: vars
+        run: |
+          echo "git_sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+      - name: cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: build native container
+        run: |
+          echo "building native image"
+          ./mvnw -Pnative -TC2 spring-boot:build-image 
