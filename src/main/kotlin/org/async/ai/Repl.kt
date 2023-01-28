@@ -18,6 +18,7 @@ class Repl(private val openAI: OpenAI) : CommandLineRunner {
             try {
                 val result = eval(input)
                 println(result)
+                println()
             } catch (e: Exception) {
                 println("Error: ${e.message}")
             }
