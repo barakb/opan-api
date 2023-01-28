@@ -1,13 +1,17 @@
 package org.async.ai
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.util.*
 
 class OpenAI(private val openAiWebClient: WebClient, private val objectMapper: ObjectMapper) {
 
-    @Value("\${openai.key}")
-    private var openAIKey: String? = ""
+    @Value("\${openai.api.key}")
+    private lateinit var openAIKey: String
 
     fun complete(
         msg: String,
@@ -16,23 +20,18 @@ class OpenAI(private val openAiWebClient: WebClient, private val objectMapper: O
         model: String = "text-davinci-003"
     ): Mono<String> {
 
-
-
         return openAiWebClient.post()
             .uri("/completions")
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openAIKey")
-            .bodyValue(
-                mapOf(
-                    "model" to model,
-                    "prompt" to msg,
-                    "temperature" to temperature,
-                    "max_tokens" to maxTokens
-                )
-            )
+            .headers { it.addAll(createHttpHeaders()) }
+            .bodyValue(mapOf(
+                "model" to model,
+                "prompt" to msg,
+                "temperature" to temperature,
+                "max_tokens" to maxTokens,
+            ))
             .retrieve()
             .bodyToMono(String::class.java)
-            .map{
+            .map {
                 objectMapper.readTree(it)
                     .get("choices")
                     .get(0)
@@ -42,11 +41,11 @@ class OpenAI(private val openAiWebClient: WebClient, private val objectMapper: O
 
     }
 
+    @Suppress("unused")
     fun models(): Mono<List<String>> {
         return openAiWebClient.get()
             .uri("/models")
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openAIKey")
+            .headers { it.addAll(createHttpHeaders()) }
             .retrieve()
             .bodyToMono(String::class.java)
             .map { resp ->
@@ -55,5 +54,13 @@ class OpenAI(private val openAiWebClient: WebClient, private val objectMapper: O
                     .map { it.get("id").asText() }
             }
     }
+
+    private fun createHttpHeaders(): HttpHeaders {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        headers.setBearerAuth(openAIKey)
+        return headers
+    }
+
 }
 
