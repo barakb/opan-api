@@ -6,8 +6,9 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 @Component
-class Repl(private val openAI: OpenAI) : CommandLineRunner {
-    override fun run(vararg args: String?) {
+class Repl(private val openAIService: OpenAIService) : CommandLineRunner {
+    override
+    fun run(vararg args: String?) {
         val reader = BufferedReader(InputStreamReader(System.`in`))
 
         while (true) {
@@ -24,8 +25,9 @@ class Repl(private val openAI: OpenAI) : CommandLineRunner {
             }
         }
     }
+
     fun eval(input: String): Any {
-        return openAI.complete(input)
+        return openAIService.complete(input)
             .block()!!.trimStart()
     }
 }
